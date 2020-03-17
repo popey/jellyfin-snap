@@ -1,0 +1,10 @@
+#!/bin/bash
+
+snap remove jellyfin --purge
+if snapcraft; then
+	if snap install jellyfin*.snap --dangerous; then
+		for PERM in removable-media mount-observe process-control home-all; do sudo snap connect jellyfin:${PERM}; done
+		snap logs -n 100 jellyfin
+		snap run jellyfin.jellyfin-web
+	fi
+fi

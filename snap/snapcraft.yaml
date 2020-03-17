@@ -1,0 +1,83 @@
+name: jellyfin
+version: "10.5.0"
+base: core18
+summary: jellyfin-server 
+description: |
+  jellyfin server 
+
+confinement: strict
+grade: stable
+
+architectures:
+  - build-on: arm64
+  - build-on: amd64
+  - build-on: armhf
+
+plugs:
+  home-all:
+    interface: home
+    read: all
+
+apps:
+  jellyfin:
+    environment:
+      "JELLYFIN_DATA": "$SNAP_USER_COMMON/"
+      "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1"
+      "LD_LIBRARY_PATH": "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$LD_LIBRARY_PATH"
+    command: usr/lib/jellyfin/bin/jellyfin
+    daemon: simple
+    restart-condition: always
+    plugs:
+      - home-all
+      - network
+      - network-bind
+      - network-observe
+      - network-control
+      - process-control
+      - removable-media
+      - mount-observe
+      - home
+      - opengl
+  jellyfin-web:
+    command: /usr/bin/xdg-open http://localhost:8096/
+    plugs:
+      - desktop
+
+parts:
+  jellyfin-server:
+    plugin: dump
+    source: 
+      - on amd64: https://github.com/jellyfin/jellyfin/releases/download/v$SNAPCRAFT_PROJECT_VERSION/jellyfin_$SNAPCRAFT_PROJECT_VERSION-1_ubuntu-amd64.deb
+      - on arm64: https://github.com/jellyfin/jellyfin/releases/download/v$SNAPCRAFT_PROJECT_VERSION/jellyfin_$SNAPCRAFT_PROJECT_VERSION-1_ubuntu-arm64.deb
+      - on armhf: https://github.com/jellyfin/jellyfin/releases/download/v$SNAPCRAFT_PROJECT_VERSION/jellyfin_$SNAPCRAFT_PROJECT_VERSION-1_ubuntu-armhf.deb
+    stage-packages:
+      - libasn1-8-heimdal
+      - libcurl4
+      - libfreetype6
+      - libgssapi3-heimdal
+      - libhcrypto4-heimdal
+      - libheimbase1-heimdal
+      - libheimntlm0-heimdal
+      - libhx509-5-heimdal
+      - libkrb5-26-heimdal
+      - libldap-2.4-2
+      - libnghttp2-14
+      - libpng16-16
+      - libpsl5
+      - libroken18-heimdal
+      - librtmp1
+      - libsasl2-2
+      - libwind0-heimdal
+      - libfontconfig1
+      - liblttng-ust0
+      - ffmpeg
+      - libavcodec57
+      - libavcodec-extra57
+      - libavdevice57
+      - libavfilter-extra6
+      - libavfilter6
+      - libavformat57
+      - libavresample3
+      - libavutil55
+      - libslang2
+      - libgl1-mesa-dri
